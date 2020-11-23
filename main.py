@@ -2,7 +2,7 @@ from PySide2.QtWidgets import QApplication,QWidget,QPushButton,QMessageBox,QLabe
 import sys
 from PySide2.QtGui import QIcon,QPixmap,QFont,QGuiApplication,Qt,QColor
 import matplotlib.colors as myColor
-import testPySide2
+import MainWindow
 from PySide2.QtWidgets import QRadioButton
 import determenistic
 
