@@ -267,15 +267,9 @@ class DeterministicScreen(QMainWindow):
 
 
         arr = [deter.nTCase(n) for n in range(deter.ti+40)]
-        
-        x = np.array(arr)
-        plt.step(range(deter.ti+40), x, where='post')
-        plt.ylabel('number of customers')
-        plt.xlabel('time in seconds')
 
-        plt.grid(axis='x', color='0.95')
-        plt.title('number of custorms at each secod')
-        plt.show()
+        x = np.array(arr)
+
         m=int(self.alreadyPresentpeopleQEditText.toPlainText())
         k=int(self.capacityQEditText.toPlainText())
         
@@ -284,7 +278,7 @@ class DeterministicScreen(QMainWindow):
          #   arrival=[n for n in range(int(1/deter.lambdda),(deter.ti)+((int(1/deter.lambdda))*5),int(1/deter.lambdda))]
         #else:
          #   arrival=[n for n in range(0,(deter.ti)+((int(1/deter.lambdda))*5),int(1/deter.lambdda))]
-        arrival=[n for n in range(int(1/deter.lambdda),(deter.ti)+((int(1/deter.lambdda))*5),int(1/deter.lambdda))]
+        arrival = [n for n in range(int(1/deter.lambdda),(deter.ti)+((int(1/deter.lambdda))*5),int(1/deter.lambdda))]
 
         departures = []
 
@@ -315,7 +309,7 @@ class DeterministicScreen(QMainWindow):
                         int(np.ceil(len(dates) / 3)))[:len(dates)]
 
         # Create figure and plot a stem plot with the date
-        fig, ax = plt.subplots(1,1,figsize=(23, 4))
+        fig, (ax, ax2) = plt.subplots(2, figsize=(23, 23))
         ax.set(title="customers arrival and departure", xlabel="('time in seconds')")
 
         ax.vlines(x_values, 0, y_values, color="tab:blue")  # The vertical stems.
@@ -331,8 +325,13 @@ class DeterministicScreen(QMainWindow):
 
         # remove y axis and spines
         ax.get_yaxis().set_visible(False)
-        for spine in ["left", "top", "right"]:
-            ax.spines[spine].set_visible(False)
+        # for spine in ["left", "top", "right"]:
+        #     ax.spines[spine].set_visible(False)
 
-        ax.margins(y=0.05)
+        ax.margins(y=0.2)
+        ax2.step(range(deter.ti + 40), x, where='post')
+        ax2.set(ylabel='number of customers', xlabel='time in seconds', title='number of custorms at each second')
+        plt.grid(axis='x', color='0.95')
+        plt.show()
+
         plt.show()
