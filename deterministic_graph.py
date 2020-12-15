@@ -12,3 +12,4 @@ class DeterministicGraphScreen(QMainWindow):
         self.setWindowTitle('Deterministic Graph')
         self.setGeometry(150,150,800,600)
         self.setFixedSize(800,600)
+        

@@ -14,6 +14,11 @@ class Deter:
     k = 0
     ti = 0
     m = 0
+    def __init__(self,lambdda,meu,k,m):
+        self.lambdda=lambdda
+        self.meu=meu
+        self.k=k
+        self.m=m
     # find ti
 
     def tI(self):
@@ -139,6 +144,12 @@ class sochasitc:
     meu=0
     c=0
     k=0
+    def __init__(self,lambdda,meu,c,k):
+        self.lambdaa=lambdda
+        self.meu=meu
+        self.c=c
+        self.k=k
+        
     def L(self):
         if(self.k==0 and self.c==1):
             return int((self.lambdaa)/(self.meu-self.lambdaa))
@@ -181,7 +192,8 @@ class sochasitc:
 
     def W(self):
         if(self.k==0 and self.c==1):
-            return int(1/(self.meu-self.lambdaa))
+            print(self.meu)
+            return 1/(self.meu-self.lambdaa)
         elif(self.k!=0 and self.c==1):
             return self.L()/(self.lambdaa*(1-self.Pk()))
         elif(self.k==0 and self.c>1):
@@ -250,14 +262,10 @@ class sochasitc:
 
 
 
-deter=Deter()
-deter.k=5
-deter.lambdda=1/4
-deter.meu=1/6
-deter.tI()
-print(deter.ti)
-print(deter.nTCase(44))
 
 
 
 
+
+soch=sochasitc(50,60,1,0)
+print(soch.W())

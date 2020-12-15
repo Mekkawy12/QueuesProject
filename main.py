@@ -5,7 +5,7 @@ import matplotlib.colors as myColor
 import MainWindow
 from PySide2.QtWidgets import QRadioButton
 import determenistic
-
+import sochastic
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -69,8 +69,9 @@ class MainWindow(QMainWindow):
 
 
     def stochasticRadioClicked(self):
-        pass
-
+        self.soch=sochastic.SochasticScreen()
+        self.soch.show()
+        self.destroy()
 
 
     def center(self):

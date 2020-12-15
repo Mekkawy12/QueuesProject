@@ -6,7 +6,12 @@ import MainWindow
 from PySide2.QtWidgets import QRadioButton,QTextEdit
 import main
 import deterministic_graph
+import QueueOperations 
+import re
+import matplotlib.pyplot as plt
+import numpy as np 
 class DeterministicScreen(QMainWindow):
+    deter=0
     def __init__(self):
         super().__init__()
 
@@ -32,8 +37,56 @@ class DeterministicScreen(QMainWindow):
 
 
     def handleSubmit(self):
-        self.drawButton.setVisible(True)
-        self.resultLabel.setVisible(True)
+        global deter
+        st1=self.lambdaQEditText.toPlainText() + " " + self.meoQEditText.toPlainText() + " " + self.capacityQEditText.toPlainText() + " "+self.alreadyPresentpeopleQEditText.toPlainText() + " " +self.nServersQEditText.toPlainText()+ " " +self.timeQEditText.toPlainText()
+        
+        lam2=0
+        meo2=0
+        n=0
+        
+        if re.match(r"[0-9]+/[0-9]+\b",self.lambdaQEditText.toPlainText()):
+            
+            ar2=re.split("/",self.lambdaQEditText.toPlainText())
+            lam2=int(ar2[0])/float(ar2[1])
+            n+=1
+            st1=self.meoQEditText.toPlainText() + " " + self.capacityQEditText.toPlainText() + " "+self.alreadyPresentpeopleQEditText.toPlainText() + " " +self.nServersQEditText.toPlainText()+ " " +self.timeQEditText.toPlainText()
+
+        if re.match(r"[0-9]+/[0-9]+\b",self.meoQEditText.toPlainText()):
+            ar2=re.split("/",self.meoQEditText.toPlainText())
+            meo2=int(ar2[0])/float(ar2[1])
+            n+=1
+            if n!=1:
+                st1=self.capacityQEditText.toPlainText() + " "+self.alreadyPresentpeopleQEditText.toPlainText() + " " +self.nServersQEditText.toPlainText()+ " " +self.timeQEditText.toPlainText()
+            else:
+                st1=self.lambdaQEditText.toPlainText() + " " + self.capacityQEditText.toPlainText() + " "+self.alreadyPresentpeopleQEditText.toPlainText() + " " +self.nServersQEditText.toPlainText()+ " " +self.timeQEditText.toPlainText()
+        ar1=re.search(r"[^\d\s.//]",st1)
+        ar=re.findall(r"([0-9]+\.[0-9]+)|(\.[0-9]+)|([0-9]+)",st1)
+
+        
+        if(len(ar)+n==6 and ar1==None and self.alreadyPresentpeopleQEditText.toPlainText()!=self.capacityQEditText.toPlainText()):
+            
+            if lam2==0:
+                lam2=float(self.lambdaQEditText.toPlainText())
+
+            if meo2==0:
+                meo2=float(self.meoQEditText.toPlainText())
+
+            deter=QueueOperations.Deter(lam2,meo2,
+            int(self.capacityQEditText.toPlainText()),int(self.alreadyPresentpeopleQEditText.toPlainText()))
+            deter.tI()
+            st="Ti: "+str(deter.ti)+", n("+self.timeQEditText.toPlainText()+"): "+str(deter.nTCase(float(
+                self.timeQEditText.toPlainText()
+            )))+ ", Wqn("+self.nServersQEditText.toPlainText()+"): "+str(deter.wqN(int(self.nServersQEditText.toPlainText())))
+
+            self.resultLabel.setText(st)
+            
+            self.drawButton.setVisible(True)
+            self.resultLabel.setVisible(True)
+        else:
+            self.resultLabel.setGeometry((self.width()/2)-60,480,200,100)
+            self.resultLabel.setText("Invalid Input")
+            self.drawButton.setVisible(False)
+            self.resultLabel.setVisible(True)
 
     def initUi(self):
         
@@ -43,14 +96,14 @@ class DeterministicScreen(QMainWindow):
         self.lambdaLabel.adjustSize()
         
         self.lambdaQEditText=QTextEdit(self)
-        self.lambdaQEditText.setGeometry(130,90,200,50)
+        self.lambdaQEditText.setGeometry(140,90,200,50)
         self.lambdaQEditText.setStyleSheet("border: 1px solid; border-radius:15px; background-color: palette(base); ")
         self.lambdaQEditText.setFont(QFont('Sanserif',13))
         self.lambdaQEditText.setAlignment(Qt.AlignCenter)
-        self.lambdaQEditText.setPlaceholderText('enter the arrival rate..')
+        self.lambdaQEditText.setPlaceholderText('arrival rate..')
         self.lambdaQEditText.setTextColor(QColor(255, 0, 0))
         
-
+        
 
         
         self.meoLabel=QLabel('μ : ',self)
@@ -59,11 +112,11 @@ class DeterministicScreen(QMainWindow):
         self.meoLabel.adjustSize()
         
         self.meoQEditText=QTextEdit(self)
-        self.meoQEditText.setGeometry(630,90,200,50)
+        self.meoQEditText.setGeometry(640,90,200,50)
         self.meoQEditText.setStyleSheet("border: 1px solid; border-radius:15px; background-color: palette(base); ")
         self.meoQEditText.setFont(QFont('Sanserif',13))
         self.meoQEditText.setAlignment(Qt.AlignCenter)
-        self.meoQEditText.setPlaceholderText('enter the service rate..')
+        self.meoQEditText.setPlaceholderText('service rate..')
         self.meoQEditText.setTextColor(QColor(0, 0, 255))
 
 
@@ -74,11 +127,11 @@ class DeterministicScreen(QMainWindow):
         self.nServersLabel.adjustSize()
         
         self.nServersQEditText=QTextEdit(self)
-        self.nServersQEditText.setGeometry(380,190,200,50)
+        self.nServersQEditText.setGeometry(390,190,200,50)
         self.nServersQEditText.setStyleSheet("border: 1px solid; border-radius:15px; background-color: palette(base); ")
         self.nServersQEditText.setFont(QFont('Sanserif',13))
         self.nServersQEditText.setAlignment(Qt.AlignCenter)
-        self.nServersQEditText.setPlaceholderText('enter the servers number..')
+        self.nServersQEditText.setPlaceholderText('waiting for n..')
         self.nServersQEditText.setTextColor(QColor(0, 255, 0))
 
 
@@ -88,7 +141,7 @@ class DeterministicScreen(QMainWindow):
         self.timeLabel.adjustSize()
         
         self.timeQEditText=QTextEdit(self)
-        self.timeQEditText.setGeometry(130,290,200,50)
+        self.timeQEditText.setGeometry(140,290,200,50)
         self.timeQEditText.setStyleSheet("border: 1px solid; border-radius:15px; background-color: palette(base); ")
         self.timeQEditText.setFont(QFont('Sanserif',13))
         self.timeQEditText.setAlignment(Qt.AlignCenter)
@@ -96,17 +149,17 @@ class DeterministicScreen(QMainWindow):
         self.timeQEditText.setTextColor(QColor(255, 0, 0))
 
 
-        self.capacityLabel=QLabel('k-1 : ',self)
+        self.capacityLabel=QLabel('k : ',self)
         self.capacityLabel.setFont(QFont('Sanserif',16))
         self.capacityLabel.move(600,300)
         self.capacityLabel.adjustSize()
         
         self.capacityQEditText=QTextEdit(self)
-        self.capacityQEditText.setGeometry(630,290,200,50)
+        self.capacityQEditText.setGeometry(640,290,200,50)
         self.capacityQEditText.setStyleSheet("border: 1px solid; border-radius:15px; background-color: palette(base); ")
         self.capacityQEditText.setFont(QFont('Sanserif',13))
         self.capacityQEditText.setAlignment(Qt.AlignCenter)
-        self.capacityQEditText.setPlaceholderText('enter the Capacity..')
+        self.capacityQEditText.setPlaceholderText('Capacity..')
         self.capacityQEditText.setTextColor(QColor(0, 0, 255))
 
         
@@ -116,11 +169,11 @@ class DeterministicScreen(QMainWindow):
         self.alreadyPresentpeopleLabel.adjustSize()
         
         self.alreadyPresentpeopleQEditText=QTextEdit(self)
-        self.alreadyPresentpeopleQEditText.setGeometry(380,390,200,50)
+        self.alreadyPresentpeopleQEditText.setGeometry(400,390,200,50)
         self.alreadyPresentpeopleQEditText.setStyleSheet("border: 1px solid; border-radius:15px; background-color: palette(base); ")
         self.alreadyPresentpeopleQEditText.setFont(QFont('Sanserif',13))
         self.alreadyPresentpeopleQEditText.setAlignment(Qt.AlignCenter)
-        self.alreadyPresentpeopleQEditText.setPlaceholderText('enter the peresent people..')
+        self.alreadyPresentpeopleQEditText.setPlaceholderText('peresent people..')
         self.alreadyPresentpeopleQEditText.setTextColor(QColor(0, 255, 0))
 
 
@@ -133,19 +186,20 @@ class DeterministicScreen(QMainWindow):
 
         #out Label................
 
-        self.resultLabel = QLabel('The number of customers in the system is: and the waiting time is: ',self)
+        self.resultLabel = QLabel('.............................................................',self)
         self.resultLabel.setFont(QFont('Sanserif',14))
         self.resultLabel.setStyleSheet('color:magenta')
         self.resultLabel.adjustSize()
         self.resultLabel.setVisible(False)
-        self.resultLabel.move((self.width()/2)-250,500)
-
+       # self.resultLabel.move((self.width()/2)-250,500)
+        self.resultLabel.setGeometry((self.width()/2)-140,470,340,70)
+        
         self.drawButton = QPushButton('Draw',self)
         self.drawButton.setFont(QFont('Sanserif',14))
         self.drawButton.setStyleSheet('color:white;background-color:dodgerblue;border: 0px solid; border-radius:15px')
         self.drawButton.move((self.width()/2)-50,550)
         self.drawButton.setVisible(False)
-        self.drawButton.clicked.connect(self.showDeterministicGraph)
+        self.drawButton.clicked.connect(self.showGraph)
 
         
 
@@ -200,8 +254,85 @@ class DeterministicScreen(QMainWindow):
         if userInfo == QMessageBox.Yes:
             event.accept()
             self.close()
-            #sys.exit(QApplication(sys.argv).exec_())                   
+            sys.exit(QApplication(sys.argv).exec_())                   
             
         elif userInfo == QMessageBox.No:
             event.ignore()       
     
+    def showGraph(self):
+        λ = 1 / 3
+
+
+        global deter
+
+
+        arr = [deter.nTCase(n) for n in range(deter.ti+40)]
+        
+        x = np.array(arr)
+        plt.step(range(deter.ti+40), x, where='post')
+        plt.ylabel('number of customers')
+        plt.xlabel('time in seconds')
+
+        plt.grid(axis='x', color='0.95')
+        plt.title('number of custorms at each secod')
+        plt.show()
+        m=int(self.alreadyPresentpeopleQEditText.toPlainText())
+        k=int(self.capacityQEditText.toPlainText())
+        
+        names = [f'c{n}' for n in range(23)]
+        #if m==0 and k!=0:
+         #   arrival=[n for n in range(int(1/deter.lambdda),(deter.ti)+((int(1/deter.lambdda))*5),int(1/deter.lambdda))]
+        #else:
+         #   arrival=[n for n in range(0,(deter.ti)+((int(1/deter.lambdda))*5),int(1/deter.lambdda))]
+        arrival=[n for n in range(int(1/deter.lambdda),(deter.ti)+((int(1/deter.lambdda))*5),int(1/deter.lambdda))]
+
+        departures = []
+
+        if int(self.alreadyPresentpeopleQEditText.toPlainText())==0:
+            
+            for n in range(int(1/deter.lambdda)+1,(deter.ti)+((int(1/deter.lambdda))*5)):
+                    if deter.is_departure(n) and n<deter.ti:
+                        departures.append(n)
+                    if n>deter.ti and n%int(1/deter.lambdda)==0:
+                        departures.append(n)
+        else:
+            for n in range(0,(deter.ti)+((int(1/deter.lambdda))*5)):
+                    
+                    if m>0:
+                        print(m)
+                        departures.append(n)
+                        m-=int(1/deter.meu)
+                    if n % int(1/deter.lambdda)==0:
+                        m+=1
+                    
+
+        dates = [n // 2 for n in range(46)]
+        x_values = arrival + departures
+        y_values = [2 for n in range(len(arrival))] + [-2 for n in range(len(departures))]
+        labels = [f'c{n}' for n in range(1,len(arrival))]
+
+        levels = np.tile([4, 4, -5],
+                        int(np.ceil(len(dates) / 3)))[:len(dates)]
+
+        # Create figure and plot a stem plot with the date
+        fig, ax = plt.subplots(1,1,figsize=(23, 4))
+        ax.set(title="customers arrival and departure", xlabel="('time in seconds')")
+
+        ax.vlines(x_values, 0, y_values, color="tab:blue")  # The vertical stems.
+        ax.xaxis.set_ticks(np.arange(min(x_values), max(x_values) + 1, 1.0))
+        ax.plot(x_values, np.zeros_like(x_values), "-o", color="k", markerfacecolor="w")  # Baseline and markers on it.
+        
+        # annotate lines
+        for d, l, r in zip(x_values, y_values, labels):
+            ax.annotate(r, xy=(d, l),
+                        xytext=(-3, np.sign(l) * 3), textcoords="offset points",
+                        horizontalalignment="center",
+                        verticalalignment="bottom" if l > 0 else "top")
+
+        # remove y axis and spines
+        ax.get_yaxis().set_visible(False)
+        for spine in ["left", "top", "right"]:
+            ax.spines[spine].set_visible(False)
+
+        ax.margins(y=0.05)
+        plt.show()
