@@ -22,6 +22,7 @@ class Deter:
     # find ti
 
     def tI(self):
+        
         if(self.lambdda > self.meu):
             self.tICase1()
         else:
@@ -64,8 +65,13 @@ class Deter:
 
     # find nt
     def nTCase(self,t):
+        if self.k==0 and self.m==0:
+                x1, x2 = symbols('x1, x2')
+                x1 = solve(Eq(self.lambdda * t, x1))[0]
+                x2 = solve(Eq((self.meu * t) - (self.meu / self.lambdda), x2))[0]
+                return math.floor(x1) - math.floor(x2)
         
-        if t < (1 / self.lambdda) and self.m == 0:
+        elif t < (1 / self.lambdda) and self.m == 0:
             return 0
         elif self.lambdda > self.meu:
             if t < self.ti:

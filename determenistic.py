@@ -62,8 +62,12 @@ class DeterministicScreen(QMainWindow):
         ar1=re.search(r"[^\d\s.//]",st1)
         ar=re.findall(r"([0-9]+\.[0-9]+)|(\.[0-9]+)|([0-9]+)",st1)
 
+        flag=0
+        if(self.alreadyPresentpeopleQEditText.toPlainText()==self.capacityQEditText.toPlainText()):
+            if(self.alreadyPresentpeopleQEditText.toPlainText()!="0"):
+                flag=1
         
-        if(len(ar)+n==6 and ar1==None and self.alreadyPresentpeopleQEditText.toPlainText()!=self.capacityQEditText.toPlainText()):
+        if(len(ar)+n==6 and ar1==None and flag==0):
             
             if lam2==0:
                 lam2=float(self.lambdaQEditText.toPlainText())
@@ -74,9 +78,16 @@ class DeterministicScreen(QMainWindow):
             deter=QueueOperations.Deter(lam2,meo2,
             int(self.capacityQEditText.toPlainText()),int(self.alreadyPresentpeopleQEditText.toPlainText()))
             deter.tI()
-            st="Ti: "+str(deter.ti)+", n("+self.timeQEditText.toPlainText()+"): "+str(deter.nTCase(float(
+            if(self.alreadyPresentpeopleQEditText.toPlainText()=="0" and self.capacityQEditText.toPlainText()=="0"):
+                deter.ti=0
+                self.resultLabel.setGeometry((self.width()/2)-70,470,300,70)
+                st="Ti: "+"0"+", n("+self.timeQEditText.toPlainText()+"): "+str(deter.nTCase(float(
                 self.timeQEditText.toPlainText()
-            )))+ ", Wqn("+self.nServersQEditText.toPlainText()+"): "+str(deter.wqN(int(self.nServersQEditText.toPlainText())))
+                )))
+            else:
+                st="Ti: "+str(deter.ti)+", n("+self.timeQEditText.toPlainText()+"): "+str(deter.nTCase(float(
+                self.timeQEditText.toPlainText()
+                )))+ ", Wqn("+self.nServersQEditText.toPlainText()+"): "+str(deter.wqN(int(self.nServersQEditText.toPlainText())))
 
             self.resultLabel.setText(st)
             
@@ -279,12 +290,18 @@ class DeterministicScreen(QMainWindow):
         #else:
          #   arrival=[n for n in range(0,(deter.ti)+((int(1/deter.lambdda))*5),int(1/deter.lambdda))]
         arrival = [n for n in range(int(1/deter.lambdda),(deter.ti)+((int(1/deter.lambdda))*5),int(1/deter.lambdda))]
-
+        
         departures = []
 
         if int(self.alreadyPresentpeopleQEditText.toPlainText())==0:
             
-            for n in range(int(1/deter.lambdda)+1,(deter.ti)+((int(1/deter.lambdda))*5)):
+            if( self.capacityQEditText.toPlainText()=="0"):
+                 for n in range(int(1/deter.lambdda)+1,(deter.ti)+((int(1/deter.lambdda))*5)):
+                    if deter.is_departure(n):
+                        departures.append(n)
+                    
+            else:
+                for n in range(int(1/deter.lambdda)+1,(deter.ti)+((int(1/deter.lambdda))*5)):
                     if deter.is_departure(n) and n<deter.ti:
                         departures.append(n)
                     if n>deter.ti and n%int(1/deter.lambdda)==0:
